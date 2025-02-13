@@ -17,12 +17,12 @@ const char* paswoord = "ICW6_ICW6"; // Paswoord van je Wi-Fi netwerk
 WiFiClient WiFiClient1; // Een object wifiClient1 van de klasse wifiClient
 const char* mqttBroker = "broker.hivemq.com"; // Te gebruiken MQTT broker
 const char* mqttClientName = "IoT_Torben_Plas"; // Naam van de MQTT-client
-const char* topicToSub = "IoT/TorbenP/leds"; // De MQTT topic om het aantal LEDs te ontvangen
+const char* topicToSub = "IoT/InteractieveQuiz/leds/Team1"; // De MQTT topic om het aantal LEDs te ontvangen
 
 PubSubClient mqttClient1(WiFiClient1); // MQTT client
 
 // Functies voor WiFi en MQTT
-void initWiFi() {
+void initWiFi() { 
     WiFi.begin(ssid, paswoord);
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
