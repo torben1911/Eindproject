@@ -1,0 +1,113 @@
+#include "WiFi.h"
+#include <PubSubClient.h>
+#include <SPI.h>
+
+// SPI-instellingen
+#define SPI_DEV_1_SPEED 512000
+#define SPI_DEV_1_DATA_ORDER MSBFIRST
+#define SPI_DEV_1_DATA_MODE SPI_MODE3
+#define MAX_LEDS 5  // Maximum aantal LEDs
+
+// Huidig aantal brandende LEDs
+int huidigAantalLeds = 0;
+
+// WiFi instellingen
+const char* ssid = "ICW"; // SSID van je Wi-Fi netwerk
+const char* paswoord = "ICW6_ICW6"; // Paswoord van je Wi-Fi netwerk
+WiFiClient WiFiClient1; // Een object wifiClient1 van de klasse wifiClient
+const char* mqttBroker = "broker.hivemq.com"; // Te gebruiken MQTT broker
+const char* mqttClientName = "IoT_Torben_Plas"; // Naam van de MQTT-client
+const char* topicToSub = "IoT/InteractieveQuiz/leds/Team2"; // De MQTT topic om het aantal LEDs te ontvangen
+
+PubSubClient mqttClient1(WiFiClient1); // MQTT client
+
+// Functies voor WiFi en MQTT
+void initWiFi() { 
+    WiFi.begin(ssid, paswoord);
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+    }
+    Serial.println("Verbonden met WiFi!");
+}
+
+void mqttConnect() {
+    while (!mqttClient1.connected()) {
+        if (mqttClient1.connect(mqttClientName)) {
+            mqttClient1.subscribe(topicToSub);
+        } else {
+            delay(5000);
+        }
+    }
+}
+
+void callback(char* topic, byte* message, unsigned int length) {
+    String ontvangenMsg;
+    for (int i = 0; i < length; i++) {
+        ontvangenMsg += (char)message[i];
+    }
+    Serial.print("Message ontvangen: ");
+    Serial.println(ontvangenMsg);
+
+    // Verwerk het aantal LEDs
+    int ledsAantal = ontvangenMsg.toInt();
+    if (ledsAantal >= 0 && ledsAantal <= MAX_LEDS) {
+        huidigAantalLeds = ledsAantal;
+        stuurLeds(huidigAantalLeds);
+        Serial.print("Aantal LEDs aangestoken: ");
+        Serial.println(huidigAantalLeds);
+    } else {
+        Serial.println("Ongeldig aantal LEDs. Houd het tussen 0 en 5.");
+    }
+}
+
+// Functie voor het sturen van LEDs via SPI
+void stuurLeds(int aantal) {
+    StartFrame();
+    for (int i = 0; i < MAX_LEDS; i++) {
+        if (i < aantal) {
+            LedFrame(3, 255, 0, 0);  // Rood aan voor ingeschakelde LED
+        } else {
+            LedFrame(3, 0, 0, 0);    // LED uit
+        }
+    }
+    EndFrame();
+}
+
+// SPI communicatiefuncties
+void StartFrame() {
+    SPI.transfer(0x00);
+    SPI.transfer(0x00);
+    SPI.transfer(0x00);
+    SPI.transfer(0x00);
+}
+
+void LedFrame(uint8_t pHelderheid, uint8_t pRood, uint8_t pGroen, uint8_t pBlauw) {
+    pHelderheid |= 0b11100000; 
+    SPI.transfer(pHelderheid);
+    SPI.transfer(pBlauw);
+    SPI.transfer(pGroen);
+    SPI.transfer(pRood);
+}
+
+void EndFrame() {
+    SPI.transfer(0xFF);
+    SPI.transfer(0xFF);
+    SPI.transfer(0xFF);
+    SPI.transfer(0xFF);
+}
+
+void setup() {
+    Serial.begin(115200);
+    initWiFi();
+    mqttClient1.setServer(mqttBroker, 1883);
+    mqttClient1.setCallback(callback);
+    SPI.begin();
+    SPI.beginTransaction(SPISettings(SPI_DEV_1_SPEED, SPI_DEV_1_DATA_ORDER, SPI_DEV_1_DATA_MODE));
+}
+
+void loop() {
+    if (!mqttClient1.connected()) {
+        mqttConnect();
+    }
+    mqttClient1.loop();
+}
