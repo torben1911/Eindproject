@@ -20,8 +20,9 @@ const char* paswoord = "ICW6_ICW6"; // Paswoord van het te gebruiken wifi-netwer
 WiFiClient WiFiClient1; // Een object wifiClient1 van de klasse wifiClient.
 const char* mqttBroker = "broker.hivemq.com"; // De te gebruiken MQTT-broker.
 const char* mqttClientName = "IoT_Torben_Plas"; // Naam van de MQTT-client
-const char* topicToSub = "IoT/TorbenP/knop"; // Naam van de topic waarop geabonneerd wordt.
-const char* topicToPub = "IoT/TorbenP/status"; // Naam van de topic waarop data verstuurd wordt.
+const char* topicToSub = "IoT/InteractieveQuiz/EnDisKnoppen"; // Naam van de topic waarop geabonneerd wordt.
+const char* topicToPub = "IoT/InteractieveQuiz/status/Rood"; // Naam van de topic waarop data verstuurd wordt.
+const char* topicToSub1  = "IoT/InteractieveQuiz/WaardeLed/Rood"; //Naam van de topic waarop geabonneerd wordt.
 PubSubClient mqttClient1(WiFiClient1);
 
 // Variabelen voor knopcontrole
@@ -52,12 +53,16 @@ void initMQTTbroker() {
     mqttClient1.setCallback(callback);
 }
 
-void mqttConnect() {
-    while (!mqttClient1.connected()) {
+void mqttConnect() 
+{
+    while (!mqttClient1.connected()) 
+    {
         Serial.print("Verbind met MQTT-broker...");
         if (mqttClient1.connect(mqttClientName)) {
             Serial.println("Verbonden");
             mqttClient1.subscribe(topicToSub);
+            mqttClient1.subscribe(topicToSub1);
+
         } else {
             Serial.print("Mislukt, rc=");
             Serial.print(mqttClient1.state());
@@ -78,24 +83,37 @@ void callback(char* topic, byte* message, unsigned int length) {
     Serial.print(". Bericht: ");
     Serial.println(ontvangenMsg);
 
-    if (String(topic) == topicToSub) {
-        if (ontvangenMsg.equalsIgnoreCase("enableknop")) {
+    if (String(topic) == topicToSub)
+     {
+        if (ontvangenMsg.equalsIgnoreCase("enableknop")) 
+        {
             knopEnabled = true;
             Serial.println("Knop is ingeschakeld via MQTT.");
-        } else if (ontvangenMsg.equalsIgnoreCase("disableknop")) {
+        } 
+        else if (ontvangenMsg.equalsIgnoreCase("disableknop")) 
+        {
             knopEnabled = false;
             Serial.println("Knop is uitgeschakeld via MQTT.");
-        } else if (ontvangenMsg.equalsIgnoreCase("enableled")) {
+        }
+     } 
+    if (String(topic) == topicToSub1)
+     {
+      
+        if (ontvangenMsg.equalsIgnoreCase(" enableled"))
+        {
             ledEnabled = true;
             digitalWrite(LED, HIGH);
             Serial.println("LED is ingeschakeld via MQTT.");
-        } else if (ontvangenMsg.equalsIgnoreCase("disableled")) {
+        } 
+        else if (ontvangenMsg.equalsIgnoreCase("disableled"))
+        {
             ledEnabled = false;
             digitalWrite(LED, LOW);
             Serial.println("LED is uitgeschakeld via MQTT.");
         }
-    }
-}
+      }
+  }
+
 
 // ****************** BEGIN Drukknopverwerking ******************
 void IRAM_ATTR ChangeDrukknop() {
@@ -149,23 +167,31 @@ void loop() {
         if (command.equalsIgnoreCase("enableknop")) {
             knopEnabled = true;
             Serial.println("Knop is ingeschakeld via Serial.");
-        } else if (command.equalsIgnoreCase("disableknop")) {
+        } 
+        else if (command.equalsIgnoreCase("disableknop")) 
+        {
             knopEnabled = false;
             Serial.println("Knop is uitgeschakeld via Serial.");
-        } else if (command.equalsIgnoreCase("enableled")) {
+        }    
+        if (command.equalsIgnoreCase("enableled")) 
+        {
             ledEnabled = true;
             digitalWrite(LED, HIGH);
             Serial.println("LED is ingeschakeld via Serial.");
-        } else if (command.equalsIgnoreCase("disableled")) {
+        } 
+        else if (command.equalsIgnoreCase("disableled")) 
+        {
             ledEnabled = false;
             digitalWrite(LED, LOW);
             Serial.println("LED is uitgeschakeld via Serial.");
-        } else {
+        } 
+        else {
             Serial.println("Ongeldig commando.");
         }
     }
 
-    if (knopChange) {
+    if (knopChange) 
+    {
         ControleerDrukknop();
     }
-}
+  }
