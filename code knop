@@ -12,18 +12,20 @@ void initMQTTbroker();
 void ControleerDrukknop();
 void IRAM_ATTR ChangeDrukknop();
 
-// WiFi-instellingen
-const char* ssid = "ICW"; // SSID van het te gebruiken wifi-netwerk.
-const char* paswoord = "ICW6_ICW6"; // Paswoord van het te gebruiken wifi-netwerk
 
-// MQTT-instellingen
-WiFiClient WiFiClient1; // Een object wifiClient1 van de klasse wifiClient.
-const char* mqttBroker = "broker.hivemq.com"; // De te gebruiken MQTT-broker.
+// WiFi-instellingen
+const char* ssid = "ICW"; // SSID van je Wi-Fi netwerk
+const char* paswoord = "ICW6_ICW6"; // Paswoord van je Wi-Fi netwerk
+WiFiClient WiFiClient1; // Een object wifiClient1 van de klasse wifiClient
+const char* mqttBroker = "192.168.0.234"; // Te gebruiken MQTT broker
 const char* mqttClientName = "IoT_Torben_Plas"; // Naam van de MQTT-client
 const char* topicToSub = "IoT/InteractieveQuiz/EnDisKnoppen"; // Naam van de topic waarop geabonneerd wordt.
 const char* topicToPub = "IoT/InteractieveQuiz/status/Rood"; // Naam van de topic waarop data verstuurd wordt.
 const char* topicToSub1  = "IoT/InteractieveQuiz/WaardeLed/Rood"; //Naam van de topic waarop geabonneerd wordt.
-PubSubClient mqttClient1(WiFiClient1);
+const char* mqttPwd ="pi";
+const char* clientID="Test";
+
+PubSubClient mqttClient1(WiFiClient1); // MQTT client
 
 // Variabelen voor knopcontrole
 bool knopChange = false;
@@ -35,14 +37,14 @@ bool knopEnabled = true;
 bool ledEnabled = true;
 
 // ****************** BEGIN WiFi-instellingen ******************
-void initWiFi() {
+  void initWiFi() {
     WiFi.begin(ssid, paswoord);
-    Serial.println("Verbindt met WiFi ..");
+    Serial.println("Verbindt met WiFi...");
     while (WiFi.status() != WL_CONNECTED) {
         Serial.print('.');
         delay(500);
     }
-    Serial.println("\nVerbonden met WiFi.");
+    Serial.println("\nWiFi Verbonden!");
     Serial.print("IP-adres: ");
     Serial.println(WiFi.localIP());
 }
@@ -53,20 +55,15 @@ void initMQTTbroker() {
     mqttClient1.setCallback(callback);
 }
 
-void mqttConnect() 
-{
-    while (!mqttClient1.connected()) 
-    {
-        Serial.print("Verbind met MQTT-broker...");
-        if (mqttClient1.connect(mqttClientName)) {
-            Serial.println("Verbonden");
+void mqttConnect() {
+    while (!mqttClient1.connected()) {
+        Serial.print("Probeer te verbinden met MQTT-broker...");
+        if (mqttClient1.connect(mqttClientName, clientID, mqttPwd)) {
+            Serial.println(" Verbonden!");
             mqttClient1.subscribe(topicToSub);
-            mqttClient1.subscribe(topicToSub1);
-
         } else {
-            Serial.print("Mislukt, rc=");
-            Serial.print(mqttClient1.state());
-            Serial.println(" Probeer opnieuw binnen 5 seconden");
+            Serial.print(" Mislukt, status: ");
+            Serial.println(mqttClient1.state());
             delay(5000);
         }
     }
@@ -195,3 +192,4 @@ void loop() {
         ControleerDrukknop();
     }
   }
+
