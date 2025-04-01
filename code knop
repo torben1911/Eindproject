@@ -144,7 +144,7 @@ void setup() {
     initMQTTbroker();
 
     pinMode(LED, OUTPUT);
-    pinMode(KNOP, INPUT);
+    pinMode(KNOP, INPUT_PULLUP);
     attachInterrupt(KNOP, ChangeDrukknop, CHANGE);
 
     Serial.println("Typ 'enableknop', 'disableknop', 'enableled', of 'disableled' in de Serial Monitor.");
