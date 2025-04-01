@@ -6,7 +6,7 @@
 #define SPI_DEV_1_SPEED 512000
 #define SPI_DEV_1_DATA_ORDER MSBFIRST
 #define SPI_DEV_1_DATA_MODE SPI_MODE3
-#define MAX_LEDS 5  // Maximum aantal LEDs
+#define MAX_LEDS 90  // Maximum aantal LEDs
 
 // Huidig aantal brandende LEDs
 int huidigAantalLeds = 0;
@@ -15,9 +15,11 @@ int huidigAantalLeds = 0;
 const char* ssid = "ICW"; // SSID van je Wi-Fi netwerk
 const char* paswoord = "ICW6_ICW6"; // Paswoord van je Wi-Fi netwerk
 WiFiClient WiFiClient1; // Een object wifiClient1 van de klasse wifiClient
-const char* mqttBroker = "broker.hivemq.com"; // Te gebruiken MQTT broker
+const char* mqttBroker = "192.168.0.234"; // Te gebruiken MQTT broker
 const char* mqttClientName = "IoT_Torben_Plas"; // Naam van de MQTT-client
 const char* topicToSub = "IoT/InteractieveQuiz/leds/Team2"; // De MQTT topic om het aantal LEDs te ontvangen
+const char* mqttPwd ="pi";
+const char* clientID="Test";
 
 PubSubClient mqttClient1(WiFiClient1); // MQTT client
 
@@ -56,7 +58,7 @@ void callback(char* topic, byte* message, unsigned int length) {
         Serial.print("Aantal LEDs aangestoken: ");
         Serial.println(huidigAantalLeds);
     } else {
-        Serial.println("Ongeldig aantal LEDs. Houd het tussen 0 en 5.");
+        Serial.println("Ongeldig aantal LEDs. Houd het tussen 0 en 90.");
     }
 }
 
