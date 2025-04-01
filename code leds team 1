@@ -116,7 +116,7 @@ void stuurLeds(int aantal) {
     StartFrame();
     for (int i = 0; i < MAX_LEDS; i++) {
         if (i < aantal) {
-            LedFrame(3, 255, 0, 0);  // Rood aan voor ingeschakelde LED
+            LedFrame(20, 255, 0, 0);  // Rood aan voor ingeschakelde LED
         } else {
             LedFrame(3, 0, 0, 0);    // LED uit
         }
