@@ -6,7 +6,7 @@
 #define SPI_DEV_1_SPEED 512000
 #define SPI_DEV_1_DATA_ORDER MSBFIRST
 #define SPI_DEV_1_DATA_MODE SPI_MODE3
-#define MAX_LEDS 5  // Maximum aantal LEDs
+#define MAX_LEDS 90  // Maximum aantal LEDs
 
 // Huidig aantal brandende LEDs
 int huidigAantalLeds = 0;
