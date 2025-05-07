@@ -16,7 +16,7 @@ const char* ssid = "ICW"; // SSID van je Wi-Fi netwerk
 const char* paswoord = "ICW6_ICW6"; // Paswoord van je Wi-Fi netwerk
 WiFiClient WiFiClient1; // Een object wifiClient1 van de klasse wifiClient
 const char* mqttBroker = "192.168.0.234"; // Te gebruiken MQTT broker
-const char* mqttClientName = "IoT_Torben_Plas"; // Naam van de MQTT-client
+const char* mqttClientName = "LedstripTeam2"; // Naam van de MQTT-client
 const char* topicToSub = "IoT/InteractieveQuiz/leds/Team2"; // De MQTT topic om het aantal LEDs te ontvangen
 const char* mqttPwd ="pi";
 const char* clientID="Test";
