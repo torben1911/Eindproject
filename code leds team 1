@@ -23,13 +23,27 @@ const char* clientID="Test";
 
 PubSubClient mqttClient1(WiFiClient1); // MQTT client
 
-void mqttConnect() {
-    while (!mqttClient1.connected()) {
+
+void setup() 
+{
+       Serial.begin(115200);
+    initWiFi();
+    mqttClient1.setServer(mqttBroker, 1883);
+    mqttClient1.setCallback(callback);
+    SPI.begin();
+    SPI.beginTransaction(SPISettings(SPI_DEV_1_SPEED, SPI_DEV_1_DATA_ORDER, SPI_DEV_1_DATA_MODE));
+}
+void mqttConnect() 
+{
+    while (!mqttClient1.connected()) 
+    {
         Serial.print("Probeer te verbinden met MQTT-broker...");
-        if (mqttClient1.connect(mqttClientName, clientID, mqttPwd)) {
+        if (mqttClient1.connect(mqttClientName, clientID, mqttPwd)) 
+        {
             Serial.println(" Verbonden!");
             mqttClient1.subscribe(topicToSub);
-        } else {
+        } else 
+        {
             Serial.print(" Mislukt, status: ");
             Serial.println(mqttClient1.state());
             delay(5000);
@@ -37,9 +51,11 @@ void mqttConnect() {
     }
 }
 
-void callback(char* topic, byte* message, unsigned int length) {
+void callback(char* topic, byte* message, unsigned int length) 
+{
       String ontvangenMsg;
-    for (int i = 0; i < length; i++) {
+    for (int i = 0; i < length; i++) 
+    {
         ontvangenMsg += (char)message[i];
     }
     Serial.print("Message ontvangen: ");
@@ -47,20 +63,24 @@ void callback(char* topic, byte* message, unsigned int length) {
 
     // Verwerk het aantal LEDs
     int ledsAantal = ontvangenMsg.toInt();
-    if (ledsAantal >= 0 && ledsAantal <= MAX_LEDS) {
+    if (ledsAantal >= 0 && ledsAantal <= MAX_LEDS) 
+    {
         huidigAantalLeds = ledsAantal;
         stuurLeds(huidigAantalLeds);
         Serial.print("Aantal LEDs aangestoken: ");
         Serial.println(huidigAantalLeds);
-    } else {
+    } else 
+    {
         Serial.println("Ongeldig aantal LEDs. Houd het tussen 0 en 5.");
     }
 }
 
-void initWiFi() {
+void initWiFi() 
+{
     WiFi.begin(ssid, paswoord);
     Serial.println("Verbindt met WiFi...");
-    while (WiFi.status() != WL_CONNECTED) {
+    while (WiFi.status() != WL_CONNECTED) 
+    {
         Serial.print('.');
         delay(500);
     }
@@ -69,12 +89,14 @@ void initWiFi() {
     Serial.println(WiFi.localIP());
 }
 
-void initMQTTbroker() {
+void initMQTTbroker() 
+{
     mqttClient1.setServer(mqttBroker, 1883);
     mqttClient1.setCallback(callback);
 }
 
-void setup() {
+void setup() 
+{
        Serial.begin(115200);
     initWiFi();
     mqttClient1.setServer(mqttBroker, 1883);
@@ -83,21 +105,25 @@ void setup() {
     SPI.beginTransaction(SPISettings(SPI_DEV_1_SPEED, SPI_DEV_1_DATA_ORDER, SPI_DEV_1_DATA_MODE));
 }
 
-void loop() {
-       if (!mqttClient1.connected()) {
+void loop() 
+{
+       if (!mqttClient1.connected()) 
+    {
         mqttConnect();
     }
     mqttClient1.loop();
 }
 
-void StartFrame() {
+void StartFrame() 
+{
     SPI.transfer(0x00);
     SPI.transfer(0x00);
     SPI.transfer(0x00);
     SPI.transfer(0x00);
 }
 
-void LedFrame(uint8_t pHelderheid, uint8_t pRood, uint8_t pGroen, uint8_t pBlauw) {
+void LedFrame(uint8_t pHelderheid, uint8_t pRood, uint8_t pGroen, uint8_t pBlauw) 
+{
     pHelderheid |= 0b11100000; 
     SPI.transfer(pHelderheid);
     SPI.transfer(pBlauw);
@@ -105,17 +131,21 @@ void LedFrame(uint8_t pHelderheid, uint8_t pRood, uint8_t pGroen, uint8_t pBlauw
     SPI.transfer(pRood);
 }
 
-void EndFrame() {
+void EndFrame() 
+{
     SPI.transfer(0xFF);
     SPI.transfer(0xFF);
     SPI.transfer(0xFF);
     SPI.transfer(0xFF);
 }
 
-void stuurLeds(int aantal) {
+void stuurLeds(int aantal) 
+{
     StartFrame();
-    for (int i = 0; i < MAX_LEDS; i++) {
-        if (i < aantal) {
+    for (int i = 0; i < MAX_LEDS; i++) 
+{
+        if (i < aantal)
+        {
             LedFrame(20, 255, 0, 0);  // Rood aan voor ingeschakelde LED
         } else {
             LedFrame(3, 0, 0, 0);    // LED uit
