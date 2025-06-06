@@ -20,8 +20,8 @@ WiFiClient WiFiClient1; // Een object wifiClient1 van de klasse wifiClient
 const char* mqttBroker = "192.168.0.234"; // Te gebruiken MQTT broker
 const char* mqttClientName = "IoT_Torben_Plas"; // Naam van de MQTT-client
 const char* topicToSub = "IoT/InteractieveQuiz/EnDisKnoppen"; // Naam van de topic waarop geabonneerd wordt.
-const char* topicToPub = "IoT/InteractieveQuiz/status/Rood"; // Naam van de topic waarop data verstuurd wordt.
-const char* topicToSub1  = "IoT/InteractieveQuiz/WaardeLed/Rood"; //Naam van de topic waarop geabonneerd wordt.
+const char* topicToPub = "IoT/InteractieveQuiz/status/Groen"; // Naam van de topic waarop data verstuurd wordt.
+const char* topicToSub1  = "IoT/InteractieveQuiz/WaardeLed/Groen"; //Naam van de topic waarop geabonneerd wordt.
 const char* mqttPwd ="pi";
 const char* clientID="Test";
 
